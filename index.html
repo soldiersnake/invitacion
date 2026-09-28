@@ -82,11 +82,12 @@
             // Canción en /music — src vacío oculta el reproductor (ver music/LEEME.txt)
             music: {
                 src: "music/vals.mp3",
+                autoplay: true, // intenta sonar al entrar; si el navegador lo bloquea, arranca con el primer toque/clic
                 labelPlay: "Escuchar vals",
                 labelPause: "Pausar"
             },
             rsvp: {
-                whatsapp: "5491100000000" // código de país + número, sin + ni espacios
+                whatsapp: "34623912847" // código de país + número, sin + ni espacios
             }
         };
 
@@ -201,6 +202,21 @@
             audio.addEventListener("play", () => setState(true));
             audio.addEventListener("pause", () => setState(false));
             setState(false);
+
+            // Autoplay: los navegadores bloquean el audio con sonido hasta que la
+            // persona interactúa con la página. Intentamos reproducir al cargar y,
+            // si se bloquea, arrancamos con el primer toque, clic o tecla.
+            if (data.music.autoplay) {
+                audio.play().catch(() => {
+                    const events = ["pointerdown", "touchend", "keydown"];
+                    const start = (event) => {
+                        events.forEach((name) => document.removeEventListener(name, start, true));
+                        if (event.target.closest && event.target.closest("#music-btn")) return; // el botón ya gestiona su clic
+                        if (audio.paused) audio.play().catch(() => {});
+                    };
+                    events.forEach((name) => document.addEventListener(name, start, true));
+                });
+            }
         }
 
         document.addEventListener("error", (event) => {
