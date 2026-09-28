@@ -31,6 +31,7 @@ Todo lo personalizable está en el objeto `INVITATION` dentro de `index.html`:
 - `venue` — nombre, dirección y búsqueda de Google Maps
 - `images` — rutas de fotos (deben estar en `images/`)
 - `music.src` — canción de fondo; si queda vacío, se oculta el reproductor
+- `music.autoplay` — `true` para que suene al entrar (si el navegador bloquea el autoplay, arranca con el primer toque o clic)
 - `rsvp.whatsapp` — número con código de país, sin `+` ni espacios
 
 Si las fotos se llaman `hero.jpg`, `gallery-1.jpg`... no hay que tocar el código. La canción va en `music/` y su ruta exacta (con extensión, ej. `music/vals.mp3`) se setea en `INVITATION.music.src`. Detalles en `images/LEEME.txt` y `music/LEEME.txt`.
