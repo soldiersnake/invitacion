@@ -1,16 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Invitación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: "#2c2924",
+                        muted: "#6f6a62",
+                        paper: "#f6f1e8",
+                        card: "#fffdf8",
+                        line: "#e4d9c8",
+                        gold: "#b0894a",
+                        rose: "#c9a9a4"
+                    },
+                    fontFamily: {
+                        sans: ["Outfit", "system-ui", "sans-serif"],
+                        serif: ["Cormorant Garamond", "Georgia", "serif"]
+                    }
+                }
+            }
+        };
+    </script>
     <style>
-        body {
-            background-color: #B5EAD7;
+        html { scroll-behavior: smooth; }
+        .img-fallback {
+            background:
+                radial-gradient(circle at 30% 20%, rgba(201, 169, 164, 0.35), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(176, 137, 74, 0.25), transparent 45%),
+                linear-gradient(160deg, #efe6d6, #e4d3c8);
         }
     </style>
 </head>
-<body>
-    <h1>Hello Word!!!</h1>
+<body class="font-sans font-light text-ink bg-paper leading-relaxed">
+    <div id="app"></div>
+    <script>
+        // Por cada pedido, cambiá SOLO este objeto. El resto de la página se arma solo.
+        const INVITATION = {
+            couple: {
+                partner1: "Valentina", // nombre 1
+                partner2: "Martín" // nombre 2
+            },
+            copy: {
+                kicker: "La voz de un casamiento", // texto chico arriba de los nombres
+                conjunction: "y",
+                invitation: "Con la alegría de nuestras familias, queremos compartir con ustedes el comienzo de esta historia. Los esperamos para celebrar nuestro casamiento.",
+                detailsTitle: "Cuándo y dónde",
+                galleryTitle: "Nuestra historia",
+                rsvpTitle: "Confirmá tu asistencia",
+                rsvpBody: "Antes del 1 de octubre de 2026.",
+                rsvpLabel: "Confirmar por WhatsApp",
+                footer: "Con amor"
+            },
+            event: {
+                dateISO: "2026-11-14T17:00:00", // formato interno: YYYY-MM-DDTHH:mm:ss
+                dateLabel: "Sábado 14 de noviembre de 2026", // lo que se ve en la página
+                timeLabel: "17:00 hs"
+            },
+            venue: {
+                name: "Estancia Los Álamos",
+                address: "Camino del Lago 1200",
+                city: "Tigre, Buenos Aires",
+                mapsQuery: "Estancia Los Álamos Tigre Buenos Aires" // búsqueda de Google Maps
+            },
+            // Fotos solo en /images — nunca en la raíz del proyecto (ver images/LEEME.txt)
+            images: {
+                hero: { src: "images/hero.jpg", alt: "Valentina y Martín" },
+                gallery: [
+                    { src: "images/gallery-1.jpg", alt: "El pedido" },
+                    { src: "images/gallery-2.jpg", alt: "Juntos" },
+                    { src: "images/gallery-3.jpg", alt: "El lugar" }
+                ]
+            },
+            // Canción en /music — src vacío oculta el reproductor (ver music/LEEME.txt)
+            music: {
+                src: "music/vals.mp3",
+                labelPlay: "Escuchar vals",
+                labelPause: "Pausar"
+            },
+            rsvp: {
+                whatsapp: "5491100000000" // código de país + número, sin + ni espacios
+            }
+        };
+
+        function esc(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function image(src, alt, className) {
+            if (!src) return `<div class="${className} img-fallback" aria-hidden="true"></div>`;
+            return `<img class="${className}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy">`;
+        }
+
+        function mapsEmbed(query) {
+            const q = encodeURIComponent(query);
+            return `https://maps.google.com/maps?q=${q}&z=14&output=embed`;
+        }
+
+        function render(data) {
+            const names = `${esc(data.couple.partner1)} ${esc(data.copy.conjunction)} ${esc(data.couple.partner2)}`;
+            const location = [data.venue.address, data.venue.city].filter(Boolean).join(", ");
+            const rsvpHref = `https://wa.me/${esc(data.rsvp.whatsapp)}?text=${encodeURIComponent("¡Hola! Confirmamos asistencia a " + data.couple.partner1 + " y " + data.couple.partner2 + ".")}`;
+            document.title = names.replace(/&amp;/g, "&");
+
+            const fillImg = "absolute inset-0 h-full w-full object-cover";
+            const cardImg = "h-full w-full object-cover";
+
+            document.getElementById("app").innerHTML = `
+                <header class="grid grid-cols-1 bg-card lg:min-h-[100svh] lg:grid-cols-2">
+                    <div class="order-2 flex flex-col justify-center gap-4 px-6 py-10 sm:px-10 sm:py-14 lg:order-1 lg:gap-5 lg:p-16">
+                        <p class="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-gold sm:text-xs">${esc(data.copy.kicker)}</p>
+                        <h1 class="font-serif text-[clamp(2.4rem,11vw,4.4rem)] font-medium leading-[0.95] tracking-tight lg:text-[clamp(3.2rem,5.5vw,5.8rem)]">
+                            ${esc(data.couple.partner1)}
+                            <em class="my-[0.12em] block text-[0.55em] italic font-medium text-rose">${esc(data.copy.conjunction)}</em>
+                            ${esc(data.couple.partner2)}
+                        </h1>
+                        <p class="text-sm text-muted sm:text-base">${esc(data.event.dateLabel)} · ${esc(data.venue.name)}</p>
+                    </div>
+                    <div class="relative order-1 h-[62vw] max-h-[28rem] min-h-[16rem] sm:h-[55vw] sm:max-h-[34rem] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[100svh]">
+                        ${image(data.images.hero.src, data.images.hero.alt, fillImg)}
+                    </div>
+                </header>
+
+                <section class="px-6 py-14 sm:py-20">
+                    <p class="mx-auto max-w-2xl text-center font-serif text-[clamp(1.1rem,3.2vw,1.45rem)] italic leading-relaxed text-[#3a362f]">${esc(data.copy.invitation)}</p>
+                </section>
+
+                <section class="px-6 pb-14 sm:pb-20">
+                    <div class="mx-auto grid w-full max-w-[1080px] grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
+                        <article class="border border-line bg-card p-6 sm:p-8">
+                            <p class="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-gold sm:text-xs">Invitación</p>
+                            <h2 class="mb-4 mt-2 font-serif text-3xl font-medium sm:text-4xl">${esc(data.copy.detailsTitle)}</h2>
+                            <div class="flex flex-col gap-0.5 border-t border-line py-3"><span class="text-xs uppercase tracking-widest text-muted">Fecha</span><strong class="text-base font-medium">${esc(data.event.dateLabel)}</strong></div>
+                            <div class="flex flex-col gap-0.5 border-t border-line py-3"><span class="text-xs uppercase tracking-widest text-muted">Hora</span><strong class="text-base font-medium">${esc(data.event.timeLabel)}</strong></div>
+                            <div class="flex flex-col gap-0.5 border-t border-line py-3"><span class="text-xs uppercase tracking-widest text-muted">Lugar</span><strong class="text-base font-medium">${esc(data.venue.name)}</strong></div>
+                            <div class="flex flex-col gap-0.5 border-t border-line py-3"><span class="text-xs uppercase tracking-widest text-muted">Dirección</span><strong class="text-base font-medium">${esc(location)}</strong></div>
+                        </article>
+                        <div class="relative min-h-[16rem] overflow-hidden bg-[#ddd6c8] sm:min-h-[22rem] lg:min-h-full">
+                            <iframe class="absolute inset-0 h-full w-full border-0" title="Mapa de ${esc(data.venue.name)}" src="${mapsEmbed(data.venue.mapsQuery)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="px-6 pb-14 sm:pb-20">
+                    <div class="mx-auto w-full max-w-[1080px]">
+                        <h2 class="mb-6 text-center font-serif text-3xl font-medium sm:text-4xl">${esc(data.copy.galleryTitle)}</h2>
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            ${data.images.gallery.map((item) => `<figure class="aspect-[4/5] overflow-hidden bg-[#e8ddd3]">${image(item.src, item.alt, cardImg)}</figure>`).join("")}
+                        </div>
+                    </div>
+                </section>
+
+                <section class="px-6 pb-16 text-center sm:pb-20">
+                    <p class="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-gold sm:text-xs">RSVP</p>
+                    <h2 class="mb-3 mt-2 font-serif text-3xl font-medium sm:text-4xl">${esc(data.copy.rsvpTitle)}</h2>
+                    <p class="text-base text-ink">${esc(data.copy.rsvpBody)}</p>
+                    <a class="mt-6 inline-block bg-ink px-6 py-3.5 text-xs font-medium uppercase tracking-[0.12em] text-card no-underline" href="${rsvpHref}" target="_blank" rel="noopener">${esc(data.copy.rsvpLabel)}</a>
+                </section>
+
+                <footer class="px-6 pb-12 pt-2 text-center text-sm text-muted">${esc(data.copy.footer)}, ${names}</footer>
+                ${data.music && data.music.src ? `
+                <button class="fixed bottom-4 right-4 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-line bg-card text-lg leading-none text-ink shadow-md sm:bottom-5 sm:right-5" id="music-btn" type="button" aria-pressed="false" aria-label="${esc(data.music.labelPlay)}" title="${esc(data.music.labelPlay)}">♪</button>
+                <audio id="bg-music" src="${esc(data.music.src)}" loop preload="auto"></audio>
+                ` : ""}
+            `;
+        }
+
+        function setupMusic(data) {
+            const audio = document.getElementById("bg-music");
+            const btn = document.getElementById("music-btn");
+            if (!audio || !btn) return;
+            const setState = (playing) => {
+                btn.setAttribute("aria-pressed", playing ? "true" : "false");
+                const label = playing ? data.music.labelPause : data.music.labelPlay;
+                btn.setAttribute("aria-label", label);
+                btn.title = label;
+                btn.classList.toggle("bg-ink", playing);
+                btn.classList.toggle("text-card", playing);
+                btn.classList.toggle("bg-card", !playing);
+                btn.classList.toggle("text-ink", !playing);
+            };
+            btn.addEventListener("click", async () => {
+                if (audio.paused) {
+                    try { await audio.play(); } catch (_) {}
+                } else {
+                    audio.pause();
+                }
+            });
+            audio.addEventListener("play", () => setState(true));
+            audio.addEventListener("pause", () => setState(false));
+            setState(false);
+        }
+
+        document.addEventListener("error", (event) => {
+            if (event.target.tagName !== "IMG") return;
+            const fallback = document.createElement("div");
+            fallback.className = (event.target.className + " img-fallback").trim();
+            fallback.setAttribute("aria-hidden", "true");
+            event.target.replaceWith(fallback);
+        }, true);
+
+        render(INVITATION);
+        setupMusic(INVITATION);
+    </script>
 </body>
 </html>

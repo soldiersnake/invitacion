@@ -1,0 +1,9 @@
+Poné acá las fotos de cada casamiento, con estos nombres:
+
+  hero.jpg         portada
+  gallery-1.jpg    galería
+  gallery-2.jpg
+  gallery-3.jpg
+
+Si usás exactamente esos nombres, no hace falta tocar el código.
+Si cambia el nombre o la extensión, actualizá INVITATION.images en index.html.

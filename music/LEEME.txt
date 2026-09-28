@@ -1,0 +1,7 @@
+Poné acá la canción de cada casamiento (mp3, wav, ogg... cualquier formato que reproduce el navegador):
+
+  vals.mp3     loop de fondo (vals tierno)
+  default-vals.wav   vals de demo generado para la plantilla
+
+Si usás el nombre de siempre, solo actualizá INVITATION.music.src en index.html con la ruta exacta del archivo (ej: music/vals.mp3).
+Dejá src vacío para ocultar el reproductor.
