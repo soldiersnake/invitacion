@@ -206,7 +206,11 @@
             // Autoplay: los navegadores bloquean el audio con sonido hasta que la
             // persona interactúa con la página. Intentamos reproducir al cargar y,
             // si se bloquea, arrancamos con el primer toque, clic o tecla.
-            if (data.music.autoplay) {
+            // Si la invitación está embebida en un iframe (p. ej. la vista previa del
+            // portfolio), no suena sola: la música queda en pausa hasta pulsar ♪.
+            let embedded = true;
+            try { embedded = window.self !== window.top; } catch (_) {}
+            if (data.music.autoplay && !embedded) {
                 audio.play().catch(() => {
                     const events = ["pointerdown", "touchend", "keydown"];
                     const start = (event) => {
